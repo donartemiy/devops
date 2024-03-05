@@ -1,0 +1,8 @@
+# EXAMPLE. You must use your values of variables
+
+# To root module 'provider' block:
+# To get token use 'yc iam create-token'
+tfvars_token              = "t1.9eu...kFJAg"
+tfvars_cloud_id           = "b1g3jd...kle7p"
+tfvars_folder_id          = "b1gb81...8b78m"
+tfvars_instance_subnet_id = "e9b9bc...79eig"

@@ -1,0 +1,56 @@
+pipeline {
+    agent any // Выбираем Jenkins агента, на котором будет происходить сборка: нам нужен любой
+
+    environment {
+        BOT_TOKEN = '1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *') // Запускать будем автоматически по крону примерно раз в 5 минут
+    }
+
+    tools {
+        maven 'MAVEN' // Для сборки бэкенда нужен Maven
+        jdk 'JDK16' // И Java Developer Kit нужной версии
+	        nodejs 'NodeJS' // А NodeJS нужен для фронта
+    }
+
+    stages {
+        stage('Build & Test backend') {
+            steps {
+                dir("backend") { // Переходим в папку backend
+                    sh 'mvn package' // Собираем мавеном бэкенд
+                }
+            }
+
+            post {
+                success {
+                    junit 'backend/target/surefire-reports/**/*.xml' // Передадим результаты тестов в Jenkins
+                }
+            }
+        }
+
+        stage('Build frontend') {
+            steps {
+                dir("frontend") {
+                    sh 'npm install' // Для фронта сначала загрузим все сторонние зависимости
+                    sh 'npm run build' // Запустим сборку
+                }
+            }
+        }
+        
+        stage('Save artifacts') {
+            steps {
+                archiveArtifacts(artifacts: 'backend/target/sausage-store-0.0.1-SNAPSHOT.jar')
+                archiveArtifacts(artifacts: 'frontend/dist/frontend/*')
+            }
+            post{
+                success{
+                    sh 'curl -X POST -H \'Content-Type: application/json\' \
+     --data \'{"chat_id": "XXXXXXXXXXXXXXX", "text": "Job has completed by Artemiy Zhuravlev", "disable_notification": true}\' \
+     https://api.telegram.org/bot${BOT_TOKEN}/sendMessage'
+                }
+            }
+        }
+    }
+} 

@@ -1,0 +1,26 @@
+[Unit]
+#Для деплоя.Ранер загрузит этот файлик по scp, а скрипт deploy.sh из репозитория выполнит его
+Description=Sausage-store
+
+
+[Service]
+User=jarservice
+# Environment=REPORT_PATH=/var/sausage-store-sprint6/reports
+# Environment=LOG_PATH=/opt/log/sausage-store-backend.log
+
+# Нужно создать папку log и поменять владельца на jarservice
+# StandardOutput=append:/opt/log/sausage-store-backend.log
+
+Restart=always
+ExecStart=/usr/bin/java \
+-Dmyserver.basePath='/home/jarservice/' \
+-Dmyserver.bindAddr='127.0.0.1' \
+-Dmyserver.bindPort='8080' \
+-Dmyserver.hostName='Sausage-store' \
+-jar '/home/jarservice/sausage-store-{{ VERSION_BACKEND }}.jar'
+
+SuccessExitStatus=143
+
+
+[Install]
+WantedBy=multi-user.target

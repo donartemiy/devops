@@ -1,0 +1,12 @@
+---
+- name: Deploy Backend
+  hosts: all
+  become: true
+  gather_facts: no
+  vars_files:
+    - common_vars.yaml
+
+
+  roles:
+    - backend
+    - frontend

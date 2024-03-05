@@ -1,0 +1,17 @@
+---
+# handlers file for frontend
+
+- name: Execute Script to update repositry
+  # cat /etc/apt/sources.list.d/nodesource.list
+  ansible.builtin.shell:
+    cmd: /home/ansible/setup_21.x
+
+- name: Check nginx config
+  ansible.builtin.shell:
+    cmd: sudo nginx -t
+
+- name: Restart nginx
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: restarted

@@ -1,0 +1,7 @@
+---
+# vars file for frontend
+
+# NEXUS_REPO_FRONTEND_NAME: reponame_frontend
+# VERSION_FRONTEND: "1.0.1048949"
+
+# PUBLIC_IP: "100.100.100.100"

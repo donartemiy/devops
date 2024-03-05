@@ -1,0 +1,82 @@
+---
+# tasks file for frontend
+
+- name: Update Ubuntu repositry
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/setup_21.x
+    dest: /home/ansible/
+    mode: "0744"
+  notify: Execute Script to update repositry
+
+- name: Apt Install nodejs
+  ansible.builtin.apt:
+    name: nodejs
+
+- name: Apt Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    update_cache: yes
+
+- name: Create group "www-data"
+  ansible.builtin.group:
+    name: www-data
+    state: present
+
+- name: Add the user 'www-data' for frontend
+  ansible.builtin.user:
+    name: www-data
+    group: www-data
+    shell: /usr/sbin/nologin
+
+- name: Create directory
+  ansible.builtin.file:
+    path: /var/www-data
+    state: directory
+    mode: "0755"
+    owner: www-data
+    group: www-data
+
+- name: Download 'sausage-store-{{ VERSION_FRONTEND }}-RELEASE.tar.gz' from Nexus
+  ansible.builtin.get_url:
+    url: "{{ NEXUS_REPO_URL }}/repository/{{ NEXUS_REPO_FRONTEND_NAME }}/sausage-store-{{ VERSION_FRONTEND }}-RELEASE.tar.gz"
+    url_username: "{{ NEXUS_REPO_USER }}"
+    url_password: "{{ NEXUS_REPO_PASS }}"
+    force_basic_auth: true
+    dest: "/var/www-data/sausage-store-{{ VERSION_FRONTEND }}-RELEASE.tar.gz"
+    owner: www-data
+    group: www-data
+
+- name: Extract archive
+  ansible.builtin.unarchive:
+    src: "/var/www-data/sausage-store-{{ VERSION_FRONTEND }}-RELEASE.tar.gz"
+    dest: /var/www-data
+    remote_src: yes # otherwise get file on localhost
+    owner: www-data
+    group: www-data
+
+- name: Copy 'frontend.cfg' to VM
+  ansible.builtin.template:
+    src: frontend.cfg
+    dest: /etc/nginx/sites-available/frontend
+    owner: root
+    group: root
+  notify: # Если changed вызвать таски
+    - Check nginx config
+    - Restart nginx
+
+- name: Simlink to turn on config to frontend
+  # it cat raise mistake for first execution role
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/frontend
+    dest: /etc/nginx/sites-enabled/frontend
+    owner: root
+    group: root
+    state: link
+
+- name: Check service
+  ansible.builtin.shell:
+    cmd: systemctl status nginx
+  register: nginx_status
+  failed_when: nginx_status.rc != 0
+  # failed_when: "'Failed' in nginx_status.stdout"
+  ignore_errors: true

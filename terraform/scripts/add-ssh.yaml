@@ -1,0 +1,10 @@
+#cloud-config
+ssh_pwauth: no
+users:
+  - name: ansible
+    primary_group: ansible
+    groups: sudo
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3...b9smutqq5

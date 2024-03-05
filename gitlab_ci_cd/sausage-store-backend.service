@@ -1,0 +1,39 @@
+[Unit]
+# Рабочий вариант. С подключением к postgresql
+Description=Sausage Store Backend Service
+After=network.target
+
+[Service]
+User=jarservice
+Group=jarservice
+
+WorkingDirectory=/var/sausage-store/
+
+# Environment=JAVA_HOME=/usr/lib/jvm/java-16-openjdk-amd64/
+Environment=REPORT_PATH=/var/sausage-store/reports/
+
+# Парaметры для Spring Boot + PostgreSQL
+Environment=PSQL_USER="username"
+Environment=PSQL_PASSWORD="secret"
+Environment=PSQL_HOST="hostname_db"
+Environment=PSQL_DBNAME="name_db"
+Environment=PSQL_PORT="port"
+
+Environment=SPRING_DATASOURCE_URL="jdbc:postgresql://${PSQL_HOST}:${PSQL_PORT}/${PSQL_DBNAME}?ssl=true"
+Environment=SPRING_DATASOURCE_USERNAME="${PSQL_USER}"
+Environment=SPRING_DATASOURCE_PASSWORD="${PSQL_PASSWORD}"
+
+# Параметры для Spring boot + MongoDB
+Environment=MONGO_USER="username"
+Environment=MONGO_PASSWORD="secret"
+Environment=MONGO_HOST="hostname_db"
+Environment=MONGO_DATABASE="name_db"
+
+Environment=SPRING_DATA_MONGODB_URI="mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:27018/${MONGO_DATABASE}?tls=true"
+
+
+ExecStart=/bin/bash -c 'java -jar /home/jarservice/sausage-store.jar'
+
+
+[Install]
+WantedBy=multi-user.target

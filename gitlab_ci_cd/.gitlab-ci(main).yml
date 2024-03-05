@@ -1,0 +1,22 @@
+stages:
+  - triggers
+
+frontend-trigger-job:
+  stage: triggers
+  trigger:
+    include:
+      - "/frontend/.gitlab-ci.yml"
+    strategy: depend
+  only:
+    changes:
+      - frontend/**/* # /**/* - значит рекурсивно
+
+backend-trigger-job:
+  stage: triggers
+  trigger:
+    include:
+      - "/backend/.gitlab-ci.yml"
+    strategy: depend
+  only:
+    changes:
+      - backend/**/*

@@ -1,0 +1,13 @@
+# Common vars
+NEXUS_REPO_USER: username
+NEXUS_REPO_PASS: secret
+NEXUS_REPO_URL: http://nexus.example.com
+
+# Backend vers
+NEXUS_REPO_BACKEND_NAME: reponame_backend
+VERSION_BACKEND: 1.0.1022169
+
+# Frontend vars
+NEXUS_REPO_FRONTEND_NAME: reponame_frontend
+VERSION_FRONTEND: "1.0.1048949"
+PUBLIC_IP: "100.100.100.100"

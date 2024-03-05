@@ -1,0 +1,23 @@
+---
+- name: Tasks for backend 
+  hosts: all
+  # become: yes
+
+  vars:
+    your_name: world!
+
+  tasks:
+  - name: Ping my server
+    ping:
+
+  - debug:
+     msg: Hello, {{your_name}}
+
+  - debug:
+      var: ansible_all_ipv4_addresses[0]
+  
+  - shell: uptime
+    register: results
+  
+  - debug:
+      var: results.stdout

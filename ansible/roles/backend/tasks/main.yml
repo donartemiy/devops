@@ -1,0 +1,52 @@
+---
+# tasks file for backend
+
+- name: Apt Install openjdk-17-jdk
+  ansible.builtin.apt:
+    update_cache: true
+    name: openjdk-17-jdk
+
+- name: Create group "somegroup"
+  ansible.builtin.group:
+    name: jarservice
+    state: present
+
+- name: Add the user 'jarservice' for Java
+  ansible.builtin.user:
+    name: jarservice
+    group: jarservice
+    shell: /usr/sbin/nologin
+    create_home: true
+    move_home: true
+
+- name: Download 'sausage-store-{{ VERSION_BACKEND }}.jar' from Nexus
+  ansible.builtin.get_url:
+    url: "{{ NEXUS_REPO_URL }}/repository/{{ NEXUS_REPO_BACKEND_NAME }}/com/{{ VERSION_BACKEND }}/sausage-store-{{ VERSION_BACKEND }}.jar"
+    url_username: "{{ NEXUS_REPO_USER }}"
+    url_password: "{{ NEXUS_REPO_PASS }}"
+    force_basic_auth: true
+    dest: /home/jarservice/sausage-store.jar
+    owner: jarservice
+    group: jarservice
+
+- name: Copy 'sausage-store-backend.service' to VM
+  ansible.builtin.template:
+    src: sausage-store-backend.service
+    dest: /etc/systemd/system/sausage-store-backend.service
+    owner: root
+    group: root
+  # notify: Restart sausage-store-backend
+
+- name: Start service 'sausage-store-backend.service'
+  ansible.builtin.systemd:
+    name: sausage-store-backend.service
+    enabled: true
+    state: restarted
+    daemon_reload: true
+
+- name: Check service
+  ansible.builtin.shell:
+    cmd: systemctl status sausage-store-backend
+  register: backenf_unit_status
+  failed_when: "'Failed' in backenf_unit_status.stdout"
+  ignore_errors: true
