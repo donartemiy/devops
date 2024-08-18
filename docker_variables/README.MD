@@ -12,3 +12,5 @@ ENV MY_VARIABLE_4=${MY_VARIABLE_4}
 6.1. Объявляешь переменную в environment, а значение определяешь в .env, при этом не обяхательно объявлять env_file
 
 6.2. Если прописываешь env_file с именем отличным от .env, например env_file: "example.env", то переменную уже нельзя объявлять в environment, иначе она не приедет в dockerfile.
+
+![image info](docker_variables/img.jpg)
