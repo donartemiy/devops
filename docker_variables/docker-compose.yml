@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  my_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MY_VARIABLE_1: "Hello, Docker_1"
+        # MY_VARIABLE_2: "Hello, Docker_2"
+        MY_VARIABLE_3: "Hello, Docker_3"
+    environment:
+      - MY_VARIABLE_4="Hello, Peter_4"
+      - MY_VARIABLE_5=${MY_VARIABLE_5}
+      # Так не будет работать:
+      # - MY_VARIABLE_6=${MY_VARIABLE_6} 
+    env_file: "example.env"
